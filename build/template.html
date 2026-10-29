@@ -117,10 +117,15 @@ body.all .pager{display:none}
 .finder input:focus{outline:2px solid var(--accent);outline-offset:1px}
 .tbl{overflow-x:auto;margin-top:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 table{border-collapse:collapse;width:100%;font:400 .78rem/1.4 var(--sans)}
-th,td{padding:7px 7px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th,td{padding:7px 5px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
 th{white-space:normal;line-height:1.25}
 th{font-weight:600;color:var(--muted);background:var(--accent-soft);position:sticky;top:0}
 th:first-child,td:first-child{text-align:left;font-weight:600}
+th.gap,td.gap{padding:0;width:12px;min-width:12px;background:var(--surface);border-bottom:0}
+thead th.gap{background:var(--surface)}
+.tbl.scroll{max-height:440px;overflow:auto}
+thead tr:first-child th{top:0;height:36px}
+thead tr:nth-child(2) th{top:36px}
 th.grp{text-align:center;font-size:.8rem;color:var(--ink);border-bottom:2px solid var(--accent);letter-spacing:.02em}
 th.sep,td.sep{border-left:1px solid var(--line)}
 td.code{text-align:left;color:var(--muted);font-weight:400}
@@ -134,9 +139,14 @@ details.dict summary{cursor:pointer;font-weight:600}
 
 footer.site{border-top:1px solid var(--line);padding:30px 16px 50px;text-align:center;font:400 .85rem/1.6 var(--sans);color:var(--muted)}
 
-.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.86);display:none;place-items:center;z-index:60;padding:20px;cursor:zoom-out}
-.lightbox.on{display:grid}
-.lightbox img{max-width:100%;max-height:100%;border-radius:8px;background:#fff}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;z-index:60;overflow:auto;overscroll-behavior:contain}
+.lightbox.on{display:block}
+.lightbox .lb-in{min-width:100%;min-height:100%;display:grid;place-items:center;padding:56px 20px 20px}
+.lightbox img{display:block;max-width:100%;max-height:calc(100vh - 80px);background:#fff;border-radius:6px;cursor:zoom-in}
+.lightbox.full .lb-in{display:block;width:max-content}
+.lightbox.full img{max-width:none;max-height:none;width:var(--w);cursor:zoom-out}
+.lb-bar{position:fixed;top:10px;right:14px;display:flex;gap:8px;z-index:61;font-family:var(--sans)}
+.lb-bar button{border:0;border-radius:999px;background:rgba(255,255,255,.92);color:#111;padding:8px 14px;font:600 .82rem var(--sans);cursor:pointer}
 
 @media (max-width:900px){
   body{font-size:18px}
@@ -181,7 +191,7 @@ footer.site{border-top:1px solid var(--line);padding:30px 16px 50px;text-align:c
 </div>
 
 <footer class="site" id="siteFoot"></footer>
-<div class="lightbox" id="lb"><img alt=""></div>
+<div class="lightbox" id="lb"><div class="lb-bar"><button id="lbZoom" type="button"></button><button id="lbClose" type="button" aria-label="Close">✕</button></div><div class="lb-in"><img alt=""></div></div>
 
 <script>
 const ARTICLE = /*__ARTICLE__*/null;
@@ -202,7 +212,7 @@ const UI = {
       dictT:'Diccionari de columnes',
       dict:[['codi_mun','Codi INE del municipi'],['nom_mun','Nom del municipi'],['Periodo','Any de les dades (2023)'],['Total','Variable «Total» de l\'arxiu d\'origen'],['hit_bounds','TRUE si algun paràmetre ha tocat un límit de l\'optimització'],['shape1, shape2, scale','Paràmetres de la Dagum'],['scale, shape, inequality','Paràmetres de la Pareto IV (localització = 0)'],['mean_abs_pp','Error mitjà absolut (punts percentuals) en els indicadors de renda per unitat de consum'],['max_abs_pp','Error màxim absolut (punts percentuals)'],['med_rel_pct','Error relatiu (%) de la mediana de renda'],['p8020_rel_pct','Error relatiu (%) de la ràtio P80/P20'],['final_loss','Valor final de la funció de pèrdua']],
       lic:'Els fitxers provenen de l\'estimació descrita en aquest article a partir de l\'Atles de distribució de la renda de les llars de l\'INE. Si els fas servir, cita l\'article i el repositori.',
-      foot:'Codi i dades al repositori', fig:'Amplia la imatge'},
+      foot:'Codi i dades al repositori', fig:'Amplia la imatge', fit:'Ajusta a la pantalla', full100:'Mida real'},
   en:{brand:'Article', toc:'Sections', menu:'☰ Sections', single:'One section', all:'Full article', intro:'Introduction',
       prev:'Previous', next:'Next', step:'Step', dl:'Downloads', dlTitle:'Download the municipal parameters',
       dlLead:'Estimated Dagum and Pareto IV distribution parameters for the 614 Catalan municipalities with the full set of income-per-consumption-unit indicators (year 2023). With these parameters you can generate as much synthetic microdata as you like (for instance with R\'s VGAM package, functions rdagum and rparetoIV).',
@@ -216,7 +226,7 @@ const UI = {
       dictT:'Column dictionary',
       dict:[['codi_mun','INE municipality code'],['nom_mun','Municipality name'],['Periodo','Data year (2023)'],['Total','"Total" variable from the source file'],['hit_bounds','TRUE if a parameter touched an optimization bound'],['shape1, shape2, scale','Dagum parameters'],['scale, shape, inequality','Pareto IV parameters (location = 0)'],['mean_abs_pp','Mean absolute error (percentage points) on the income-per-consumption-unit indicators'],['max_abs_pp','Maximum absolute error (percentage points)'],['med_rel_pct','Relative error (%) of the median income'],['p8020_rel_pct','Relative error (%) of the P80/P20 ratio'],['final_loss','Final value of the loss function']],
       lic:'The files come from the estimation described in this article, based on INE\'s Household Income Distribution Atlas. If you use them, please cite the article and the repository.',
-      foot:'Code and data on the repository', fig:'Enlarge image'}
+      foot:'Code and data on the repository', fig:'Enlarge image', fit:'Fit to screen', full100:'Full size'}
 };
 
 ['https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap','https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css'].forEach(h=>{const l=document.createElement('link');l.rel='stylesheet';l.href=h;document.head.appendChild(l)});
@@ -299,7 +309,7 @@ function downloadPanel(){
     </div>
     <div class="finder"><h3>${U.find}</h3>
       <input id="q" type="search" placeholder="${U.findPh}" autocomplete="off" aria-label="${U.find}">
-      <div class="tbl" id="res"></div></div>
+      <div class="tbl scroll" id="res"></div><p id="resnote" style="margin:8px 4px 0;font:400 .75rem var(--sans);color:var(--muted)"></p></div>
     <div class="note"><b>${U.noteH}.</b> ${note}</div>
     <details class="dict"><summary>${U.dictT}</summary>
       <div class="tbl"><table><tbody>${U.dict.map(r=>`<tr><td>${r[0]}</td><td style="text-align:left;white-space:normal">${r[1]}</td></tr>`).join('')}</tbody></table></div></details>
@@ -313,13 +323,14 @@ function bindFinder(){
   const star = f => f ? '<span class="flag">*</span>' : '';
   function draw(){
     const t = norm(q.value.trim());
-    const list = t ? MUNS.filter(m=>norm(m.n).includes(t)||m.c.startsWith(t)).slice(0,8) : MUNS.slice(0,5);
+    const list = t ? MUNS.filter(m=>norm(m.n).includes(t)||m.c.startsWith(t)) : MUNS;
     if (!list.length){res.innerHTML=`<p style="padding:14px 16px;margin:0;font:400 .9rem var(--sans)">${U.none}</p>`;return}
     res.innerHTML = `<table><thead>
-      <tr><th rowspan="2" style="vertical-align:bottom">${U.mun}</th><th rowspan="2" style="vertical-align:bottom;text-align:left">${U.code}</th><th class="grp sep" colspan="4">Dagum</th><th class="grp sep" colspan="4">Pareto IV</th></tr>
-      <tr><th class="sep">shape1</th><th>shape2</th><th>scale</th><th>${U.mean}</th><th class="sep">scale</th><th>shape</th><th>inequality</th><th>${U.mean}</th></tr></thead><tbody>`
-      + list.map(m=>`<tr><td>${m.n}</td><td class="code">${m.c}</td><td class="sep">${fmt(m.d[0])}${star(m.hd)}</td><td>${fmt(m.d[1])}</td><td>${fmt(m.d[2])}</td><td>${fmt(m.d[3])}</td><td class="sep">${fmt(m.p[0])}${star(m.hp)}</td><td>${fmt(m.p[1])}</td><td>${fmt(m.p[2])}</td><td>${fmt(m.p[3])}</td></tr>`).join('')
-      + `</tbody></table><p style="margin:0;padding:8px 14px;font:400 .75rem var(--sans);color:var(--muted)">${U.hit}</p>`;
+      <tr><th rowspan="2" style="vertical-align:bottom">${U.mun}</th><th rowspan="2" style="vertical-align:bottom;text-align:left">${U.code}</th><th class="grp" colspan="4">Dagum</th><th class="gap"></th><th class="grp" colspan="4">Pareto IV</th></tr>
+      <tr><th>shape1</th><th>shape2</th><th>scale</th><th>${U.mean}</th><th class="gap"></th><th>scale</th><th>shape</th><th>inequality</th><th>${U.mean}</th></tr></thead><tbody>`
+      + list.map(m=>`<tr><td>${m.n}</td><td class="code">${m.c}</td><td>${fmt(m.d[0])}${star(m.hd)}</td><td>${fmt(m.d[1])}</td><td>${fmt(m.d[2])}</td><td>${fmt(m.d[3])}</td><td class="gap"></td><td>${fmt(m.p[0])}${star(m.hp)}</td><td>${fmt(m.p[1])}</td><td>${fmt(m.p[2])}</td><td>${fmt(m.p[3])}</td></tr>`).join('')
+      + `</tbody></table>`;
+    $('#resnote').textContent = U.hit;
   }
   q.addEventListener('input',draw); draw();
 }
@@ -355,6 +366,16 @@ function progress(){
     document.querySelectorAll('#tocList button').forEach(b=>b.setAttribute('aria-current', +b.dataset.i===cur));
   }
 }
+function lbLabel(){ const f=$('#lb').classList.contains('full'); $('#lbZoom').textContent = (f ? '− ' : '+ ') + (f ? UI[lang].fit : UI[lang].full100); }
+function openLb(im){
+  const lb=$('#lb'), img=lb.querySelector('img');
+  img.src=im.src; img.alt=im.alt;
+  lb.style.setProperty('--w', (im.naturalWidth||2000)+'px');
+  lb.classList.remove('full'); lb.classList.add('on'); lb.scrollTo(0,0); lbLabel();
+  document.body.style.overflow='hidden';
+}
+function closeLb(){ $('#lb').classList.remove('on','full'); document.body.style.overflow=''; }
+function toggleLb(){ const lb=$('#lb'); lb.classList.toggle('full'); lb.scrollTo(0,0); lbLabel(); }
 function closeMenu(){ $('#toc').classList.remove('open'); $('#menuBtn').setAttribute('aria-expanded','false'); }
 
 document.addEventListener('click',e=>{
@@ -370,11 +391,12 @@ document.addEventListener('click',e=>{
     r.dataset.theme = dark?'light':'dark'; store.set('theme',r.dataset.theme); return;
   }
   const im = e.target.closest('img.zoomable');
-  if (im){ const lbx=$('#lb'); lbx.querySelector('img').src=im.src; lbx.querySelector('img').alt=im.alt; lbx.classList.add('on'); return; }
-  if (e.target.closest('#lb')) $('#lb').classList.remove('on');
+  if (im){ openLb(im); return; }
+  if (e.target.closest('#lbClose') || e.target.closest('.lb-in') && !e.target.closest('#lb img')) { closeLb(); return; }
+  if (e.target.closest('#lb img') || e.target.closest('#lbZoom')) toggleLb();
 });
 document.addEventListener('keydown',e=>{
-  if (e.key==='Escape'){ $('#lb').classList.remove('on'); closeMenu(); }
+  if (e.key==='Escape'){ closeLb(); closeMenu(); }
   if (/input|textarea/i.test(e.target.tagName)) return;
   if (mode==='single'){ if (e.key==='ArrowRight') show(idx+1); if (e.key==='ArrowLeft') show(idx-1); }
 });

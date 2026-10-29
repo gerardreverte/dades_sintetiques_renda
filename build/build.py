@@ -46,6 +46,18 @@ def fig_width(u):
     return max(260, round(EMU[k] / 5728800 * BASE_PX)) if k in EMU else None
 
 
+RIBA_REF = '— Konstandinos Kavafis, «Ítaca», traducció de Carles Riba, a <em>Poemes</em>, vol. II, Curial, Barcelona, 1977, p. 71-73.'
+
+
+def load_riba():
+    """Versos de Carles Riba (build/riba.txt): dos blocs separats per una línia '---'. Si no hi és, es manté l'original."""
+    p = os.path.join(here, 'riba.txt')
+    if not os.path.exists(p):
+        return None
+    blocks = [b.strip() for b in re.split(r'^---\s*$', open(p, encoding='utf8').read(), flags=re.M) if b.strip()]
+    return blocks if len(blocks) == 2 else None
+
+
 def esc(s):
     return html.escape(s, quote=False)
 
@@ -222,6 +234,9 @@ def process(lang, d):
     return items, fns, state['fn']
 
 
+RIBA = load_riba()
+
+
 def render(lang, items, fns, fnrefs):
     # Seccions: 0 = introducció, després una per cada h2
     def kind(it):
@@ -240,6 +255,7 @@ def render(lang, items, fns, fnrefs):
     h3_styles = {'Ttol4'} if lang == 'ca' else {'Ttol3'}
     ca_h3_extra = {'La selecció final'}
     seen_title = 0
+    state_poem = [0]
     quote_starts = ('As you set out', 'Ithaka gave you') if lang == 'en' else ('As you set out', 'Ithaka gave you')
 
     def figure(imgs, cap):
@@ -305,6 +321,10 @@ def render(lang, items, fns, fnrefs):
                         cite = nxt
                         break
                     stanzas.append(nxt)
+                if lang == 'ca' and RIBA:
+                    stanzas = ['<br>'.join(esc(l.strip()) for l in b.splitlines()) for b in [RIBA[state_poem[0]]]]
+                    cite = RIBA_REF
+                    state_poem[0] += 1
                 out.append('<blockquote class="poem">%s%s</blockquote>' % (
                     ''.join('<p>%s</p>' % x for x in stanzas), '<footer>%s</footer>' % cite if cite else ''))
                 i += 1
@@ -351,6 +371,8 @@ def render(lang, items, fns, fnrefs):
 
 
 def linkify(h, lang):
+    if lang == 'ca':
+        h = h.replace('“The Odyssey”', '“La Odissea”')
     h = h.replace('scale i shape a la Pareto IV)', 'scale, shape i inequality a la Pareto IV)')
     h = h.replace('scale and shape in Pareto IV)', 'scale, shape and inequality in Pareto IV)')
     if lang == 'ca':
@@ -370,6 +392,7 @@ def main():
         items, fns, refs = process(lang, d)
         title, sub, secs = render(lang, items, fns, refs)
         for s in secs:
+            s.pop('out', None)
             s['html'] = re.sub(r'\\\)(?=[A-Za-zÀ-ÿ])', lambda m: '\\) ', linkify(s['html'], lang))
         data[lang] = {'title': title, 'sub': sub, 'sections': secs}
     for l in data:
