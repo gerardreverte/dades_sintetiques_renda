@@ -6,4 +6,4 @@ Pàgina web bilingüe (català / anglès) de l'article, amb les imatges i la des
 - `img/`, `data/` — imatges i CSV
 - `build/` — `build.py` + `template.html` per regenerar `index.html` a partir dels .docx
 
-Publicació: GitHub Pages (Settings → Pages → branch `main`, carpeta `/ (root)`).
+Publicació: GitHub Pages (Settings → Pages → branch `main`, carpeta `/web` o arrel si es mou el contingut).

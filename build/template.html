@@ -51,7 +51,9 @@ nav.toc li{margin:0}
 nav.toc button{display:flex;gap:10px;align-items:baseline;width:100%;text-align:left;background:none;border:0;padding:8px 10px 8px 14px;margin-left:-2px;border-left:2px solid transparent;cursor:pointer;font-size:.9rem;line-height:1.35;color:var(--muted);border-radius:0 8px 8px 0}
 nav.toc button:hover{color:var(--ink);background:var(--accent-soft)}
 nav.toc button[aria-current="true"]{color:var(--ink);font-weight:600;border-left-color:var(--accent);background:var(--accent-soft)}
-nav.toc .n{flex:none;min-width:1.5em;font:700 .75rem var(--sans);color:var(--accent)}
+nav.toc .n{flex:none;min-width:1.5em;font:700 .8rem var(--sans);color:var(--accent);text-align:center}
+nav.toc .n.dot{font-size:1.5rem;line-height:.8}
+nav.toc li.step button{padding-left:34px}
 nav.toc .dl button{color:var(--warm);font-weight:600}
 .view-toggle{margin-top:18px;display:flex;gap:6px;flex-wrap:wrap}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font:500 .78rem var(--sans);cursor:pointer;color:var(--muted)}
@@ -66,7 +68,6 @@ body.all .panel{margin-bottom:64px;padding-bottom:40px;border-bottom:1px solid v
 .kicker{display:inline-block;font:700 .72rem var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:999px;margin-bottom:12px}
 .panel h3{font-family:var(--display);font-size:1.35rem;margin:2em 0 .5em;color:var(--accent);letter-spacing:-.01em}
 .panel p{margin:0 0 1.15em}
-.panel .lead{font-size:1.18em}
 .panel ul{padding-left:1.2em}.panel li{margin:.35em 0}
 .panel li::marker{color:var(--accent)}
 .grid-list{columns:2;column-gap:32px;padding:20px 24px 20px 40px;background:var(--surface);border:1px solid var(--line);border-radius:14px;font-size:.92em;line-height:1.5}
@@ -75,10 +76,10 @@ body.all .panel{margin-bottom:64px;padding-bottom:40px;border-bottom:1px solid v
 .hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2.1rem,5.4vw,3.6rem);line-height:1.05;letter-spacing:-.03em;margin:.1em 0 .3em}
 .hero .sub{font:500 1.1rem/1.5 var(--sans);color:var(--muted);margin:0 0 28px;max-width:46ch}
 
-figure{margin:1.8em 0}
+figure{margin:1.8em auto}
 figure.fig img{display:block;width:100%;border-radius:14px;box-shadow:var(--shadow);background:#fff}
 figure.fig-table img{padding:6px;border:1px solid var(--line);box-shadow:none}
-figure.fig-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+figure.fig-row{max-width:none!important;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 figure.fig-row figcaption{grid-column:1/-1}
 figcaption{font:400 .82rem/1.45 var(--sans);color:var(--muted);margin-top:8px;text-align:center}
 .zoomable{cursor:zoom-in}
@@ -115,10 +116,14 @@ body.all .pager{display:none}
 .finder input{width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 1rem var(--sans)}
 .finder input:focus{outline:2px solid var(--accent);outline-offset:1px}
 .tbl{overflow-x:auto;margin-top:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
-table{border-collapse:collapse;width:100%;font:400 .82rem/1.4 var(--sans)}
-th,td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+table{border-collapse:collapse;width:100%;font:400 .78rem/1.4 var(--sans)}
+th,td{padding:7px 7px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{white-space:normal;line-height:1.25}
 th{font-weight:600;color:var(--muted);background:var(--accent-soft);position:sticky;top:0}
 th:first-child,td:first-child{text-align:left;font-weight:600}
+th.grp{text-align:center;font-size:.8rem;color:var(--ink);border-bottom:2px solid var(--accent);letter-spacing:.02em}
+th.sep,td.sep{border-left:1px solid var(--line)}
+td.code{text-align:left;color:var(--muted);font-weight:400}
 tr:last-child td{border-bottom:0}
 .flag{color:var(--warm);font-weight:700}
 .note{margin-top:22px;padding:16px 18px;border-radius:12px;background:var(--warm-soft);font:400 .88rem/1.55 var(--sans)}
@@ -190,7 +195,7 @@ const UI = {
       dagum:'Paràmetres de la Dagum', pareto:'Paràmetres de la Pareto IV', municipis:'municipis', download:'Descarrega el CSV',
       dagumD:'Tres paràmetres per municipi: shape1, shape2 i scale, més les mètriques de qualitat de l\'ajust.',
       paretoD:'Tres paràmetres per municipi: scale, shape i inequality (amb la localització fixada a 0), més les mètriques de qualitat de l\'ajust.',
-      find:'Cerca el teu municipi', findPh:'Escriu el nom d\'un municipi…', code:'Municipi', mean:'Error mitjà (pp)',
+      find:'Cerca el teu municipi', findPh:'Escriu el nom d\'un municipi…', mun:'Municipi', code:'Codi', mean:'Error mitjà (pp)',
       none:'Cap municipi coincideix amb la cerca.', hit:'Un asterisc (*) indica que algun paràmetre ha tocat un dels seus límits en l\'optimització.',
       noteH:'Abans d\'utilitzar-los',
       note:'Cada fila és un ajust, no una dada observada. La columna <b>hit_bounds</b> val TRUE quan algun paràmetre ha arribat a un dels límits imposats a l\'optimització: passa en <b>__HD__</b> de 614 municipis a la Dagum i en <b>__HP__</b> de 614 a la Pareto IV (en aquesta última, sovint el paràmetre <i>shape</i> queda enganxat al límit superior, 30). En aquests casos els paràmetres s\'han de llegir amb prudència; la Dagum és, en general, l\'ajust més estable (vegeu el laboratori estadístic, pas 3).',
@@ -204,7 +209,7 @@ const UI = {
       dagum:'Dagum parameters', pareto:'Pareto IV parameters', municipis:'municipalities', download:'Download CSV',
       dagumD:'Three parameters per municipality: shape1, shape2 and scale, plus the fit-quality metrics.',
       paretoD:'Three parameters per municipality: scale, shape and inequality (location fixed at 0), plus the fit-quality metrics.',
-      find:'Find your municipality', findPh:'Type a municipality name…', code:'Municipality', mean:'Mean error (pp)',
+      find:'Find your municipality', findPh:'Type a municipality name…', mun:'Municipality', code:'Code', mean:'Mean error (pp)',
       none:'No municipality matches your search.', hit:'An asterisk (*) means a parameter hit one of its bounds during optimization.',
       noteH:'Before you use them',
       note:'Each row is a fitted result, not an observed value. The <b>hit_bounds</b> column is TRUE when a parameter reached one of the bounds imposed on the optimization: this happens in <b>__HD__</b> of 614 municipalities for Dagum and in <b>__HP__</b> of 614 for Pareto IV (where the <i>shape</i> parameter is often stuck at its upper bound, 30). Read those parameters with caution; Dagum is generally the more stable fit (see the statistical lab, step 3).',
@@ -243,7 +248,7 @@ function build(){
   const vt = document.querySelectorAll('#viewToggle .chip'); vt[0].textContent=U.single; vt[1].textContent=U.all;
 
   // nav
-  const items = A.sections.map((s,i)=>{const l=label(s,i);return `<li><button data-i="${i}"><span class="n">${l.n||'·'}</span><span>${l.t}</span></button></li>`}).join('')
+  const items = A.sections.map((s,i)=>{const l=label(s,i);return `<li${l.n?' class="step"':''}><button data-i="${i}"><span class="n${l.n?'':' dot'}">${l.n||'•'}</span><span>${l.t}</span></button></li>`}).join('')
     + `<li class="dl"><button data-i="${N}"><span class="n">↓</span><span>${U.dl}</span></button></li>`;
   $('#tocList').innerHTML = items;
 
@@ -285,7 +290,7 @@ function downloadPanel(){
   const hd = MUNS.filter(m=>m.hd).length, hp = MUNS.filter(m=>m.hp).length;
   const note = U.note.replace('__HD__',hd).replace('__HP__',hp);
   return `<section class="panel" id="s${N}" data-i="${N}">
-    <span class="kicker">${U.dl}</span><h2>${U.dlTitle}</h2><p class="lead">${U.dlLead}</p>
+    <span class="kicker">${U.dl}</span><h2>${U.dlTitle}</h2><p>${U.dlLead}</p>
     <div class="dl-cards">
       <div class="card"><h3>${U.dagum}</h3><div class="meta"><span class="tag">614 ${U.municipis}</span><span class="tag">CSV · 109 KB</span><span class="tag">2023</span></div><p>${U.dagumD}</p>
         <a class="btn" href="data/parametres_dagum_municipis.csv" download>⬇ ${U.download}</a></div>
@@ -310,8 +315,10 @@ function bindFinder(){
     const t = norm(q.value.trim());
     const list = t ? MUNS.filter(m=>norm(m.n).includes(t)||m.c.startsWith(t)).slice(0,8) : MUNS.slice(0,5);
     if (!list.length){res.innerHTML=`<p style="padding:14px 16px;margin:0;font:400 .9rem var(--sans)">${U.none}</p>`;return}
-    res.innerHTML = `<table><thead><tr><th>${U.code}</th><th>Dagum shape1</th><th>shape2</th><th>scale</th><th>${U.mean}</th><th>Pareto IV scale</th><th>shape</th><th>inequality</th><th>${U.mean}</th></tr></thead><tbody>`
-      + list.map(m=>`<tr><td>${m.n} <span style="color:var(--muted);font-weight:400">${m.c}</span></td><td>${fmt(m.d[0])}${star(m.hd)}</td><td>${fmt(m.d[1])}</td><td>${fmt(m.d[2])}</td><td>${fmt(m.d[3])}</td><td>${fmt(m.p[0])}${star(m.hp)}</td><td>${fmt(m.p[1])}</td><td>${fmt(m.p[2])}</td><td>${fmt(m.p[3])}</td></tr>`).join('')
+    res.innerHTML = `<table><thead>
+      <tr><th rowspan="2" style="vertical-align:bottom">${U.mun}</th><th rowspan="2" style="vertical-align:bottom;text-align:left">${U.code}</th><th class="grp sep" colspan="4">Dagum</th><th class="grp sep" colspan="4">Pareto IV</th></tr>
+      <tr><th class="sep">shape1</th><th>shape2</th><th>scale</th><th>${U.mean}</th><th class="sep">scale</th><th>shape</th><th>inequality</th><th>${U.mean}</th></tr></thead><tbody>`
+      + list.map(m=>`<tr><td>${m.n}</td><td class="code">${m.c}</td><td class="sep">${fmt(m.d[0])}${star(m.hd)}</td><td>${fmt(m.d[1])}</td><td>${fmt(m.d[2])}</td><td>${fmt(m.d[3])}</td><td class="sep">${fmt(m.p[0])}${star(m.hp)}</td><td>${fmt(m.p[1])}</td><td>${fmt(m.p[2])}</td><td>${fmt(m.p[3])}</td></tr>`).join('')
       + `</tbody></table><p style="margin:0;padding:8px 14px;font:400 .75rem var(--sans);color:var(--muted)">${U.hit}</p>`;
   }
   q.addEventListener('input',draw); draw();

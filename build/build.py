@@ -34,6 +34,18 @@ ALT = {
 }
 
 
+# amplada d'cada figura al Word (EMU); 5.73M = amplada completa del text
+EMU = {'fig1': 5368925, 'fig2': 5728800, 'fig3': 3033905, 'fig4': 3044476, 'fig5': 1804702, 'fig6': 5713730,
+       'fig7_ca': 3777834, 'fig7_en': 3554453, 'fig8': 5718810, 'fig9_ca': 5400040, 'fig9_en': 5731510,
+       'fig10': 5465356, 'fig11': 5723761, 'fig15': 5391150}
+BASE_PX = 620
+
+
+def fig_width(u):
+    k = re.search(r'img/(fig\w+?)\.(?:png|jpeg)', u).group(1)
+    return max(260, round(EMU[k] / 5728800 * BASE_PX)) if k in EMU else None
+
+
 def esc(s):
     return html.escape(s, quote=False)
 
@@ -239,8 +251,8 @@ def render(lang, items, fns, fnrefs):
         u = imgs[0]
         alt = ALT[lang].get(u, cap or '')
         cls = 'fig fig-table' if re.search(r'fig(7|9|15)', u) else 'fig'
-        return '<figure class="%s"><img src="%s" loading="lazy" alt="%s">%s</figure>' % (
-            cls, u, html.escape(alt), '<figcaption>%s</figcaption>' % cap if cap else '')
+        return '<figure class="%s" style="max-width:%spx"><img src="%s" loading="lazy" alt="%s">%s</figure>' % (
+            cls, fig_width(u), u, html.escape(alt), '<figcaption>%s</figcaption>' % cap if cap else '')
 
     def flush_fns(sec_html_refs):
         s = ''
@@ -306,7 +318,7 @@ def render(lang, items, fns, fnrefs):
                 continue
             if plain.endswith(':') and False:
                 pass
-            cls = ' class="lead"' if (cur['title'] is None and len([o for o in out if o.startswith('<p')]) == 0) else ''
+            cls = ''
             out.append('<p%s>%s</p>' % (cls, h))
             for m_ in re.findall(r'id="fnr(\d+)"', h):
                 sec_refs.append(m_)
@@ -339,6 +351,8 @@ def render(lang, items, fns, fnrefs):
 
 
 def linkify(h, lang):
+    h = h.replace('scale i shape a la Pareto IV)', 'scale, shape i inequality a la Pareto IV)')
+    h = h.replace('scale and shape in Pareto IV)', 'scale, shape and inequality in Pareto IV)')
     if lang == 'ca':
         h = h.replace('“The Lognormal Distribution with Special Reference to its Uses in Economics”',
                       '<a href="%s" target="_blank" rel="noopener">“The Lognormal Distribution with Special Reference to its Uses in Economics”</a>' % LINKS['lognormal'])
