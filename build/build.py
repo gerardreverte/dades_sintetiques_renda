@@ -322,7 +322,7 @@ def render(lang, items, fns, fnrefs):
                         break
                     stanzas.append(nxt)
                 if lang == 'ca' and RIBA:
-                    stanzas = ['<br>'.join(esc(l.strip()) for l in b.splitlines()) for b in [RIBA[state_poem[0]]]]
+                    stanzas = ['<br>'.join(esc(l.strip()) for l in st.splitlines()) for st in re.split(r'\n\s*\n', RIBA[state_poem[0]])]
                     cite = RIBA_REF
                     state_poem[0] += 1
                 out.append('<blockquote class="poem">%s%s</blockquote>' % (
@@ -372,7 +372,7 @@ def render(lang, items, fns, fnrefs):
 
 def linkify(h, lang):
     if lang == 'ca':
-        h = h.replace('“The Odyssey”', '“La Odissea”')
+        h = h.replace('“The Odyssey”', '“L’Odissea”')
     h = h.replace('scale i shape a la Pareto IV)', 'scale, shape i inequality a la Pareto IV)')
     h = h.replace('scale and shape in Pareto IV)', 'scale, shape and inequality in Pareto IV)')
     if lang == 'ca':
