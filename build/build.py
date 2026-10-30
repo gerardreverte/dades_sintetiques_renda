@@ -43,7 +43,7 @@ BASE_PX = 620
 
 def fig_width(u):
     k = re.search(r'img/(fig\w+?)\.(?:png|jpeg)', u).group(1)
-    if k == 'fig2':
+    if k in ('fig1', 'fig2'):
         return '100%'  # ocupa tota l'amplada de la columna
     return '%dpx' % max(260, round(EMU[k] / 5728800 * BASE_PX)) if k in EMU else None
 
