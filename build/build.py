@@ -373,8 +373,6 @@ def render(lang, items, fns, fnrefs):
 def linkify(h, lang):
     if lang == 'ca':
         h = h.replace('“The Odyssey”', '“L’Odissea”')
-    h = h.replace('scale i shape a la Pareto IV)', 'scale, shape i inequality a la Pareto IV)')
-    h = h.replace('scale and shape in Pareto IV)', 'scale, shape and inequality in Pareto IV)')
     if lang == 'ca':
         h = h.replace('“The Lognormal Distribution with Special Reference to its Uses in Economics”',
                       '<a href="%s" target="_blank" rel="noopener">“The Lognormal Distribution with Special Reference to its Uses in Economics”</a>' % LINKS['lognormal'])
