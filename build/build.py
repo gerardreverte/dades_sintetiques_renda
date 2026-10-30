@@ -43,7 +43,9 @@ BASE_PX = 620
 
 def fig_width(u):
     k = re.search(r'img/(fig\w+?)\.(?:png|jpeg)', u).group(1)
-    return max(260, round(EMU[k] / 5728800 * BASE_PX)) if k in EMU else None
+    if k == 'fig2':
+        return '100%'  # ocupa tota l'amplada de la columna
+    return '%dpx' % max(260, round(EMU[k] / 5728800 * BASE_PX)) if k in EMU else None
 
 
 RIBA_REF = '— Konstandinos Kavafis, «Ítaca», traducció de Carles Riba, a <em>Poemes</em>, vol. II, Curial, Barcelona, 1977, p. 71-73.'
@@ -267,7 +269,7 @@ def render(lang, items, fns, fnrefs):
         u = imgs[0]
         alt = ALT[lang].get(u, cap or '')
         cls = 'fig fig-table' if re.search(r'fig(7|9|15)', u) else 'fig'
-        return '<figure class="%s" style="max-width:%spx"><img src="%s" loading="lazy" alt="%s">%s</figure>' % (
+        return '<figure class="%s" style="max-width:%s"><img src="%s" loading="lazy" alt="%s">%s</figure>' % (
             cls, fig_width(u), u, html.escape(alt), '<figcaption>%s</figcaption>' % cap if cap else '')
 
     def flush_fns(sec_html_refs):
