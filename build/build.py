@@ -410,6 +410,10 @@ if __name__ == '__main__' and len(sys.argv) > 2:
 def write_html():
     """Insereix contingut + dades dels municipis dins del template."""
     data = json.load(open(os.path.join(here, 'content.json'), encoding='utf8'))
+    sys.path.insert(0, here)
+    import es_content
+    data['es'] = es_content.content()
+    assert len(data['es']['sections']) == len(data['ca']['sections'])
     rows = {}
     for key, fn in (('d', 'parametres_dagum_municipis.csv'), ('p', 'parametres_paretoIV_municipis.csv')):
         for r in csv.DictReader(open(os.path.join(web, 'data', fn), encoding='utf8')):

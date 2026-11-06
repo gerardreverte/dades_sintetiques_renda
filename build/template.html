@@ -162,6 +162,8 @@ footer.site{border-top:1px solid var(--line);padding:30px 16px 50px;text-align:c
   .brand small{display:none}
 }
 @media (max-width:600px){.brand{visibility:hidden}}
+.lg-short{display:none}
+@media (max-width:480px){.lg-full{display:none}.lg-short{display:inline}.seg button{padding:6px 11px}.top-in{gap:8px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media print{.top,nav.toc,.pager,.view-toggle{display:none}.shell{display:block}.panel[hidden]{display:block}}
 </style>
@@ -172,8 +174,9 @@ footer.site{border-top:1px solid var(--line);padding:30px 16px 50px;text-align:c
     <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="toc"></button>
     <div class="brand"><small id="brandSmall"></small><span id="brandTitle"></span></div>
     <div class="seg" role="group" aria-label="Idioma / Language">
-      <button data-lang="ca" aria-pressed="true">Català</button>
-      <button data-lang="en" aria-pressed="false">English</button>
+      <button data-lang="ca" aria-pressed="true" title="Català"><span class="lg-full">Català</span><span class="lg-short">CA</span></button>
+      <button data-lang="en" aria-pressed="false" title="English"><span class="lg-full">English</span><span class="lg-short">EN</span></button>
+      <button data-lang="es" aria-pressed="false" title="Castellano"><span class="lg-full">Castellano</span><span class="lg-short">ES</span></button>
     </div>
     <button class="icon-btn" id="themeBtn" title="Tema / Theme" aria-label="Tema / Theme">◐</button>
   </div>
@@ -228,21 +231,37 @@ const UI = {
       dictT:'Column dictionary',
       dict:[['codi_mun','INE municipality code'],['nom_mun','Municipality name'],['Periodo','Data year (2023)'],['Total','"Total" variable from the source file'],['hit_bounds','TRUE if a parameter touched an optimization bound'],['shape1, shape2, scale','Dagum parameters'],['scale, shape, inequality','Pareto IV parameters (location = 0)'],['mean_abs_pp','Mean absolute error (percentage points) on the income-per-consumption-unit indicators'],['max_abs_pp','Maximum absolute error (percentage points)'],['med_rel_pct','Relative error (%) of the median income'],['p8020_rel_pct','Relative error (%) of the P80/P20 ratio'],['final_loss','Final value of the loss function']],
       lic:'The files come from the estimation described in this article, based on INE\'s Household Income Distribution Atlas. If you use them, please cite the article and the repository.',
-      foot:'Code and data on the repository', fig:'Enlarge image', fit:'Fit to screen', full100:'Full size'}
+      foot:'Code and data on the repository', fig:'Enlarge image', fit:'Fit to screen', full100:'Full size'},
+  es:{brand:'Artículo', toc:'Apartados', menu:'☰ Apartados', single:'Un apartado', all:'Todo el artículo', intro:'Introducción',
+      prev:'Anterior', next:'Siguiente', step:'Paso', dl:'Descargas', dlTitle:'Descarga los parámetros de los municipios',
+      dlLead:'Parámetros estimados de la distribución de Dagum y de la Pareto IV para los 614 municipios catalanes con todos los indicadores de renta por unidad de consumo (año 2023). Con estos parámetros puedes generar tantos microdatos sintéticos como quieras (por ejemplo con el paquete VGAM de R, funciones rdagum y rparetoIV).',
+      dagum:'Parámetros de la Dagum', pareto:'Parámetros de la Pareto IV', municipis:'municipios', download:'Descarga el CSV',
+      dagumD:'Tres parámetros por municipio: shape1, shape2 y scale, más las métricas de calidad del ajuste.',
+      paretoD:'Tres parámetros por municipio: scale, shape e inequality (con la localización fijada en 0), más las métricas de calidad del ajuste.',
+      find:'Busca tu municipio', findPh:'Escribe el nombre de un municipio…', mun:'Municipio', code:'Código', mean:'Error medio (pp)',
+      none:'Ningún municipio coincide con la búsqueda.', hit:'Un asterisco (*) indica que algún parámetro ha tocado uno de sus límites en la optimización.',
+      noteH:'Antes de utilizarlos',
+      note:'Cada fila es un ajuste, no un dato observado. La columna <b>hit_bounds</b> vale TRUE cuando algún parámetro ha llegado a uno de los límites impuestos a la optimización: ocurre en <b>__HD__</b> de 614 municipios en la Dagum y en <b>__HP__</b> de 614 en la Pareto IV (en esta última, a menudo el parámetro <i>shape</i> se queda pegado al límite superior, 30). En estos casos los parámetros deben leerse con prudencia; la Dagum es, en general, el ajuste más estable (véase el laboratorio estadístico, paso 3).',
+      dictT:'Diccionario de columnas',
+      dict:[['codi_mun','Código INE del municipio'],['nom_mun','Nombre del municipio'],['Periodo','Año de los datos (2023)'],['Total','Variable «Total» del archivo de origen'],['hit_bounds','TRUE si algún parámetro ha tocado un límite de la optimización'],['shape1, shape2, scale','Parámetros de la Dagum'],['scale, shape, inequality','Parámetros de la Pareto IV (localización = 0)'],['mean_abs_pp','Error medio absoluto (puntos porcentuales) en los indicadores de renta por unidad de consumo'],['max_abs_pp','Error máximo absoluto (puntos porcentuales)'],['med_rel_pct','Error relativo (%) de la mediana de renta'],['p8020_rel_pct','Error relativo (%) de la ratio P80/P20'],['final_loss','Valor final de la función de pérdida']],
+      lic:'Los archivos provienen de la estimación descrita en este artículo a partir del Atlas de distribución de la renta de los hogares del INE. Si los utilizas, cita el artículo y el repositorio.',
+      foot:'Código y datos en el repositorio', fig:'Amplía la imagen', fit:'Ajusta a la pantalla', full100:'Tamaño real'}
 };
 
 ['https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap','https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css'].forEach(h=>{const l=document.createElement('link');l.rel='stylesheet';l.href=h;document.head.appendChild(l)});
 const $ = s => document.querySelector(s);
 const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-let lang = store.get('lang') || ((navigator.language||'ca').toLowerCase().startsWith('en') ? 'en' : 'ca');
-const params = new URLSearchParams(location.search); if (['ca','en'].includes(params.get('lang'))) lang = params.get('lang');
+const nav0 = (navigator.language||'ca').toLowerCase();
+let lang = store.get('lang') || (nav0.startsWith('en') ? 'en' : nav0.startsWith('es') ? 'es' : 'ca');
+if (!['ca','en','es'].includes(lang)) lang = 'ca';
+const params = new URLSearchParams(location.search); if (['ca','en','es'].includes(params.get('lang'))) lang = params.get('lang');
 let idx = 0, mode = store.get('mode') || 'single';
 const N = ARTICLE.ca.sections.length;      // la darrera "secció" (N) són les descàrregues
-const fmt = (x,d=2) => x.toLocaleString(lang==='ca'?'es-ES':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmt = (x,d=2) => x.toLocaleString(lang==='en'?'en-US':'es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
 
 function label(s,i){
   if (i===0) return {n:'', t:UI[lang].intro};
-  const m = s.title.match(/^(Pas|Step)\s+(\d)\s*[.:]\s*(.*?)\.?$/);
+  const m = s.title.match(/^(Pas|Paso|Step)\s+(\d)\s*[.:]\s*(.*?)\.?$/);
   if (m) return {n:m[2], t:m[3]};
   return {n:'', t:s.title.replace(/\.$/,'')};
 }
