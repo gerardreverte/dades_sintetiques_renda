@@ -83,6 +83,11 @@ figure.fig-row{max-width:none!important;display:grid;grid-template-columns:repea
 figure.fig-row figcaption{grid-column:1/-1}
 figcaption{font:400 .82rem/1.45 var(--sans);color:var(--muted);margin-top:8px;text-align:center}
 .zoomable{cursor:zoom-in}
+.anim{position:relative}
+.anim canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:14px;background:#fff;display:none}
+.anim.on canvas{display:block}
+.anim .replay{position:absolute;right:10px;bottom:10px;display:none;border:1px solid rgba(0,0,0,.18);background:rgba(255,255,255,.92);color:#1d1b18;border-radius:999px;padding:5px 12px;font:500 .78rem system-ui,sans-serif;cursor:pointer}
+.anim.done .replay{display:block}
 
 .eq{overflow-x:auto;padding:14px 18px;margin:1.2em 0;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;font-size:1.05em}
 .eq .katex-display{margin:0}
@@ -198,6 +203,7 @@ footer.site{border-top:1px solid var(--line);padding:30px 16px 50px;text-align:c
 <footer class="site" id="siteFoot"></footer>
 <div class="lightbox" id="lb"><div class="lb-bar"><button id="lbZoom" type="button"></button><button id="lbClose" type="button" aria-label="Close">✕</button></div><div class="lb-in"><img alt=""></div></div>
 
+<script src="anim.js"></script>
 <script>
 const ARTICLE = /*__ARTICLE__*/null;
 const MUNS = /*__MUNS__*/null;
@@ -217,7 +223,7 @@ const UI = {
       dictT:'Diccionari de columnes',
       dict:[['codi_mun','Codi INE del municipi'],['nom_mun','Nom del municipi'],['Periodo','Any de les dades (2023)'],['Total','Variable «Total» de l\'arxiu d\'origen'],['hit_bounds','TRUE si algun paràmetre ha tocat un límit de l\'optimització'],['shape1, shape2, scale','Paràmetres de la Dagum'],['scale, shape, inequality','Paràmetres de la Pareto IV (localització = 0)'],['mean_abs_pp','Error mitjà absolut (punts percentuals) en els indicadors de renda per unitat de consum'],['max_abs_pp','Error màxim absolut (punts percentuals)'],['med_rel_pct','Error relatiu (%) de la mediana de renda'],['p8020_rel_pct','Error relatiu (%) de la ràtio P80/P20'],['final_loss','Valor final de la funció de pèrdua']],
       lic:'Els fitxers provenen de l\'estimació descrita en aquest article a partir de l\'Atles de distribució de la renda de les llars de l\'INE. Si els fas servir, cita l\'article i el repositori.',
-      foot:'Codi i dades al repositori', fig:'Amplia la imatge', fit:'Ajusta a la pantalla', full100:'Mida real'},
+      foot:'Codi i dades al repositori', replay:'Repeteix', fig:'Amplia la imatge', fit:'Ajusta a la pantalla', full100:'Mida real'},
   en:{brand:'Article', toc:'Sections', menu:'☰ Sections', single:'One section', all:'Full article', intro:'Introduction',
       prev:'Previous', next:'Next', step:'Step', dl:'Downloads', dlTitle:'Download the municipal parameters',
       dlLead:'Estimated Dagum and Pareto IV distribution parameters for the 614 Catalan municipalities with the full set of income-per-consumption-unit indicators (year 2023). With these parameters you can generate as much synthetic microdata as you like (for instance with R\'s VGAM package, functions rdagum and rparetoIV).',
@@ -231,7 +237,7 @@ const UI = {
       dictT:'Column dictionary',
       dict:[['codi_mun','INE municipality code'],['nom_mun','Municipality name'],['Periodo','Data year (2023)'],['Total','"Total" variable from the source file'],['hit_bounds','TRUE if a parameter touched an optimization bound'],['shape1, shape2, scale','Dagum parameters'],['scale, shape, inequality','Pareto IV parameters (location = 0)'],['mean_abs_pp','Mean absolute error (percentage points) on the income-per-consumption-unit indicators'],['max_abs_pp','Maximum absolute error (percentage points)'],['med_rel_pct','Relative error (%) of the median income'],['p8020_rel_pct','Relative error (%) of the P80/P20 ratio'],['final_loss','Final value of the loss function']],
       lic:'The files come from the estimation described in this article, based on INE\'s Household Income Distribution Atlas. If you use them, please cite the article and the repository.',
-      foot:'Code and data on the repository', fig:'Enlarge image', fit:'Fit to screen', full100:'Full size'},
+      foot:'Code and data on the repository', replay:'Replay', fig:'Enlarge image', fit:'Fit to screen', full100:'Full size'},
   es:{brand:'Artículo', toc:'Apartados', menu:'☰ Apartados', single:'Un apartado', all:'Todo el artículo', intro:'Introducción',
       prev:'Anterior', next:'Siguiente', step:'Paso', dl:'Descargas', dlTitle:'Descarga los parámetros de los municipios',
       dlLead:'Parámetros estimados de la distribución de Dagum y de la Pareto IV para los 614 municipios catalanes con todos los indicadores de renta por unidad de consumo (año 2023). Con estos parámetros puedes generar tantos microdatos sintéticos como quieras (por ejemplo con el paquete VGAM de R, funciones rdagum y rparetoIV).',
@@ -245,7 +251,7 @@ const UI = {
       dictT:'Diccionario de columnas',
       dict:[['codi_mun','Código INE del municipio'],['nom_mun','Nombre del municipio'],['Periodo','Año de los datos (2023)'],['Total','Variable «Total» del archivo de origen'],['hit_bounds','TRUE si algún parámetro ha tocado un límite de la optimización'],['shape1, shape2, scale','Parámetros de la Dagum'],['scale, shape, inequality','Parámetros de la Pareto IV (localización = 0)'],['mean_abs_pp','Error medio absoluto (puntos porcentuales) en los indicadores de renta por unidad de consumo'],['max_abs_pp','Error máximo absoluto (puntos porcentuales)'],['med_rel_pct','Error relativo (%) de la mediana de renta'],['p8020_rel_pct','Error relativo (%) de la ratio P80/P20'],['final_loss','Valor final de la función de pérdida']],
       lic:'Los archivos provienen de la estimación descrita en este artículo a partir del Atlas de distribución de la renta de los hogares del INE. Si los utilizas, cita el artículo y el repositorio.',
-      foot:'Código y datos en el repositorio', fig:'Amplía la imagen', fit:'Ajusta a la pantalla', full100:'Tamaño real'}
+      foot:'Código y datos en el repositorio', replay:'Repetir', fig:'Amplía la imagen', fit:'Ajusta a la pantalla', full100:'Tamaño real'}
 };
 
 ['https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap','https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css'].forEach(h=>{const l=document.createElement('link');l.rel='stylesheet';l.href=h;document.head.appendChild(l)});
@@ -296,6 +302,7 @@ function build(){
   html += downloadPanel();
   $('#main').innerHTML = html;
   document.querySelectorAll('#main figure img').forEach(im=>{im.classList.add('zoomable'); im.title=U.fig;});
+  bindAnims();
   addPagers();
   bindFinder();
   $('#siteFoot').innerHTML = `${U.foot}: <a href="${REPO}" target="_blank" rel="noopener">github.com/gerardreverte/dades_sintetiques_renda</a>`;
@@ -387,6 +394,37 @@ function progress(){
     document.querySelectorAll('#tocList button').forEach(b=>b.setAttribute('aria-current', +b.dataset.i===cur));
   }
 }
+/* Dibuixos animats: cada dibuix d'en Mon Culleré s'anima sol el primer cop que entra a la pantalla.
+   La imatge original es queda a sota; si l'animació no es pot preparar (navegador antic, fitxer obert des del disc), es veu la imatge. */
+const ANIMS = {
+  fig2: {mapS:1.7, markS:1.1, underlay:5, marks:{auto:true}},
+  fig3: {order:'near', mapS:9, markS:2.2, gapS:0.4, underlay:10, marks:{seeds:[[300,243]], start:[563,276]}},
+  fig4: {order:'near', mapS:9, markS:0.45, gapS:0.18, underlay:3, marks:{seeds:[[538,252],[513,205],[466,178],[408,198],[355,225],[287,222],[222,208],[183,151],[144,98]]}},
+  fig5: 'BibliotecaAnimada', fig6: 'LaboratoriAnimat', fig8: 'Fabrica1Animada', fig10: 'Fabrica2Animada', fig11: 'PoblacioAnimada'
+};
+let nearIO = null, playIO = null;
+function bindAnims(){
+  if (nearIO){ nearIO.disconnect(); playIO.disconnect(); }
+  if (!window.IntersectionObserver || !window.DibuixAnimat || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  nearIO = new IntersectionObserver(es=>es.forEach(e=>{ if (e.isIntersecting){ nearIO.unobserve(e.target); startAnim(e.target); } }), {rootMargin:'900px 0px'});   // es prepara una mica abans d'arribar-hi
+  playIO = new IntersectionObserver(es=>es.forEach(e=>{ const a=e.target._anim; if (e.isIntersecting && a && a.ready && !a.seen){ a.seen=true; a.play(); } }), {threshold:0.5});
+  document.querySelectorAll('#main figure.fig > img').forEach(im=>{ const m=/img\/(fig\d+)\.png$/.exec(im.getAttribute('src')); if (m && ANIMS[m[1]]){ im.dataset.anim=m[1]; nearIO.observe(im.parentNode); } });
+}
+function startAnim(fig){
+  const im=fig.querySelector('img[data-anim]'); if (!im || fig.querySelector('.anim')) return;
+  const cfg=ANIMS[im.dataset.anim], wrap=document.createElement('div'), cv=document.createElement('canvas'), bt=document.createElement('button');
+  wrap.className='anim'; im.replaceWith(wrap); cv.title=im.title; cv.className='zoomable'; cv.setAttribute('aria-hidden','true');
+  bt.type='button'; bt.className='replay'; bt.textContent='↻ '+UI[lang].replay;
+  wrap.append(im, cv, bt);
+  const go=()=>{
+    let a; try { a = typeof cfg==='string' ? window[cfg](fig, im.currentSrc||im.src) : DibuixAnimat(fig, im.currentSrc||im.src, cfg); } catch(e){ return; }
+    fig._anim=a;
+    a.onstate=s=>wrap.classList.toggle('done', s==='done');
+    a.onready=()=>{ wrap.classList.add('on'); playIO.observe(fig); };
+    bt.onclick=()=>{ a.seen=true; a.play(); };
+  };
+  im.loading='eager'; go();          // el motor carrega la imatge pel seu compte
+}
 function lbLabel(){ const f=$('#lb').classList.contains('full'); $('#lbZoom').textContent = (f ? '− ' : '+ ') + (f ? UI[lang].fit : UI[lang].full100); }
 function openLb(im){
   const lb=$('#lb'), img=lb.querySelector('img');
@@ -411,7 +449,9 @@ document.addEventListener('click',e=>{
     const r=document.documentElement, dark = r.dataset.theme==='dark' || (r.dataset.theme==='auto' && matchMedia('(prefers-color-scheme:dark)').matches);
     r.dataset.theme = dark?'light':'dark'; store.set('theme',r.dataset.theme); return;
   }
-  const im = e.target.closest('img.zoomable');
+  if (e.target.closest('.replay')) return;
+  const cvz = e.target.closest('.anim canvas');
+  const im = cvz ? cvz.parentNode.querySelector('img') : e.target.closest('img.zoomable');
   if (im){ openLb(im); return; }
   if (e.target.closest('#lbClose') || e.target.closest('.lb-in') && !e.target.closest('#lb img')) { closeLb(); return; }
   if (e.target.closest('#lb img') || e.target.closest('#lbZoom')) toggleLb();

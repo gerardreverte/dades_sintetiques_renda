@@ -428,6 +428,11 @@ def write_html():
     out = tpl.replace('/*__ARTICLE__*/null', json.dumps(data, ensure_ascii=False)).replace(
         '/*__MUNS__*/null', json.dumps(muns, ensure_ascii=False, separators=(',', ':')))
     open(os.path.join(web, 'index.html'), 'w', encoding='utf8').write(out)
+    # motors de les animacions dels dibuixos: es concatenen en un sol fitxer
+    anim = os.path.join(here, 'anim')
+    js = chr(10).join(open(os.path.join(anim, f), encoding='utf8').read() for f in (
+        'dibuix_animat.js', 'escena_biblioteca.js', 'escena_laboratori.js', 'escena_fabrica1.js', 'escena_fabrica2.js', 'escena_poblacio.js'))
+    open(os.path.join(web, 'anim.js'), 'w', encoding='utf8').write(js)
     print('index.html', len(out) // 1024, 'KB')
 
 
