@@ -310,7 +310,7 @@ window.DibuixAnimat = function(fig, src, cfg){
   function play(){
     if (!ready) return;
     cancelAnimationFrame(raf);
-    if (matchMedia('(prefers-reduced-motion:reduce)').matches){ finish(); return; }
+    if (!api.force && matchMedia('(prefers-reduced-motion:reduce)').matches){ finish(); return; }
     reset(); playing = true; t0 = performance.now(); speed = api.speed || 1; state('playing');
     raf = requestAnimationFrame(frame);
   }
@@ -477,7 +477,7 @@ window.BibliotecaAnimada = function(fig, src){
   function play(){
     if (!ready) return;
     cancelAnimationFrame(raf);
-    if (matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
+    if (!api.force && matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
     playing = true; t0 = performance.now(); state('playing');
     const speed = api.speed || 1;
     const frame = now => {
@@ -655,7 +655,7 @@ window.LaboratoriAnimat = function(fig, src){
   function play(){
     if (!ready) return;
     cancelAnimationFrame(raf);
-    if (matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
+    if (!api.force && matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
     playing = true; t0 = performance.now(); state('playing');
     const speed = api.speed || 1;
     const frame = now => {
@@ -964,7 +964,7 @@ window.Fabrica1Animada = function(fig, src){
   function play(){
     if (!ready) return;
     cancelAnimationFrame(raf);
-    if (matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
+    if (!api.force && matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
     playing = true; t0 = performance.now(); lastT = 1e9; state('playing');
     const speed = api.speed || 1;
     const frame = now => {
@@ -1281,7 +1281,7 @@ window.Fabrica2Animada = function(fig, src){
   function play(){
     if (!ready) return;
     cancelAnimationFrame(raf);
-    if (matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
+    if (!api.force && matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
     playing = true; t0 = performance.now(); lastT = 1e9; state('playing');
     const speed = api.speed || 1;
     const frame = now => {
@@ -1671,7 +1671,7 @@ window.PoblacioAnimada = function(fig, src){
   function play(){
     if (!ready) return;
     cancelAnimationFrame(raf);
-    if (matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
+    if (!api.force && matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
     playing = true; t0 = performance.now(); lastT = 1e9; state('playing');
     const speed = api.speed || 1;
     const frame = now => {

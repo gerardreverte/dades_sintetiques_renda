@@ -161,7 +161,7 @@ window.LaboratoriAnimat = function(fig, src){
   function play(){
     if (!ready) return;
     cancelAnimationFrame(raf);
-    if (matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
+    if (!api.force && matchMedia('(prefers-reduced-motion:reduce)').matches){ render(T.end); state('done'); return; }
     playing = true; t0 = performance.now(); state('playing');
     const speed = api.speed || 1;
     const frame = now => {

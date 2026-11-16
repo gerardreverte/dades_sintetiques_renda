@@ -310,7 +310,7 @@ window.DibuixAnimat = function(fig, src, cfg){
   function play(){
     if (!ready) return;
     cancelAnimationFrame(raf);
-    if (matchMedia('(prefers-reduced-motion:reduce)').matches){ finish(); return; }
+    if (!api.force && matchMedia('(prefers-reduced-motion:reduce)').matches){ finish(); return; }
     reset(); playing = true; t0 = performance.now(); speed = api.speed || 1; state('playing');
     raf = requestAnimationFrame(frame);
   }
